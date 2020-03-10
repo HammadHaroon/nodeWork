@@ -1,0 +1,109 @@
+create table users (
+	user_id int,
+	name varchar,
+	role_id int,
+	constraint role_id foreign key ("role_id") references "roles" ("role_id")
+
+)
+create table permissions (
+	permission_id int primary key,
+	permissionType varchar
+
+)
+create table roles(
+	role_id int primary key,
+	roleType varchar
+
+)
+
+create table roles_permissions
+(
+ 	id  int Not Null,
+	role_id int NOT NULL,
+	permission_id int Not Null,
+  	CONSTRAINT Role_Per_pk PRIMARY KEY ("role_id", "permission_id"),
+  	CONSTRAINT role_id FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id"),
+  	CONSTRAINT permission_id FOREIGN KEY ("permission_id") REFERENCES "permissions" ("permission_id")
+);
+
+select * from roles
+
+select * from permissions
+
+select * from roles_permissions
+
+select * from roles
+
+select * from users
+
+insert into roles (role_id,roletype) values (1,'admin')
+insert into roles (role_id, roletype) values (2,'manager')
+insert into roles (role_id,roletype) values (3,'customer')
+
+insert into permissions (permission_id,permissiontype) values (1,'create')
+insert into permissions (permission_id,permissiontype) values (2,'update')
+insert into permissions (permission_id,permissiontype) values (3,'delete')
+insert into permissions (permission_id,permissiontype) values (4,'view')
+
+				--inserting admin permissions
+insert into roles_permissions (id, role_id, permission_id) values (1,1,1)
+insert into roles_permissions (id, role_id, permission_id) values (2,1,2)
+insert into roles_permissions (id, role_id, permission_id) values (3,1,3)
+insert into roles_permissions (id, role_id, permission_id) values (4,1,4)
+
+				--inserting manager permissions
+insert into roles_permissions (id, role_id, permission_id) values (5,2,2)
+insert into roles_permissions (id, role_id, permission_id) values (6,2,3)
+insert into roles_permissions (id, role_id, permission_id) values (7,2,4)
+
+				--inserting customer permissions
+insert into roles_permissions (id, role_id, permission_id) values (8,3,4)
+
+				--inserting user roles
+insert into users (user_id,name,role_id) values (1,'Hammad',1)
+insert into users (user_id,name,role_id) values (2,'Hamza',2)
+insert into users (user_id,name,role_id) values (3,'Ahmed',3)
+insert into users (user_id,name,role_id) values (4,'Bilal',3)
+
+	===Q1===
+create or replace procedure my_procedure()
+language plpgsql
+as $$
+begin
+	insert into users (user_id,name,role_id) values (5,'Talha',3);
+end;
+$$;
+
+call my_procedure()
+
+select * from users
+
+
+	===Q2===
+create or replace procedure my_procedure2()
+language plpgsql
+as $$
+begin
+	insert into roles_permissions (id, role_id, permission_id) values (9,3,3);
+	
+	
+
+end;
+$$;
+
+call my_procedure2()
+
+
+select * from roles_permissions 
+
+		===Q3===
+create view My_view1 as 
+select u.user_id, u.name, r.role_id, r.roletype, p.permission_id
+from users as u
+outer join roles as r
+on 	  u.user_id = r.role_id
+outer join roles_permissions as p
+on 	  r.role_id = p.permission_id
+
+select * from My_view1
+
